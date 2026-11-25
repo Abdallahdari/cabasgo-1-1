@@ -1,0 +1,75 @@
+# Local production-like stack: the real production image + MongoDB replica set.
+#
+#   docker compose up --build
+#   docker compose run --rm tools npm run admin:create -- --email you@example.org --name "Magaca"
+#
+# Emails are printed to the app log (EMAIL_TRANSPORT=console). Uploaded images are
+# stored in MongoDB GridFS (STORAGE_DRIVER=mongodb), so no AWS account is needed.
+# This file is for local use only; production runs on ECS Fargate (see infra/).
+
+name: codka-bulshada
+
+x-app-env: &app-env
+  APP_ENV: development
+  APP_URL: http://localhost:3000
+  MONGODB_URI: mongodb://mongo:27017/?replicaSet=rs0
+  MONGODB_DB_NAME: codka_bulshada
+  EMAIL_TRANSPORT: console
+  REQUIRE_EMAIL_VERIFICATION: "false"
+  # Images are stored in MongoDB GridFS locally (no AWS needed). Set to "s3" with S3_BUCKET to use AWS.
+  STORAGE_DRIVER: ${STORAGE_DRIVER:-mongodb}
+  AWS_REGION: ${AWS_REGION:-eu-west-1}
+  S3_BUCKET: ${S3_BUCKET:-}
+  CLOUDFRONT_URL: ${CLOUDFRONT_URL:-}
+  AWS_PROFILE: ${AWS_PROFILE:-}
+  TRUSTED_PROXY_HOPS: "0"
+
+services:
+  mongo:
+    image: mongo:8.0
+    command: ["mongod", "--replSet", "rs0", "--bind_ip_all"]
+    ports:
+      - "127.0.0.1:27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    healthcheck:
+      # Initialise the single-node replica set on first start (needed for transactions).
+      test: >
+        mongosh --quiet --eval "try { rs.status().ok } catch (e) {
+        rs.initiate({_id:'rs0',members:[{_id:0,host:'mongo:27017'}]}).ok }"
+      interval: 5s
+      timeout: 10s
+      retries: 30
+      start_period: 5s
+
+  tools:
+    build:
+      context: .
+      target: tools
+    environment: *app-env
+    volumes:
+      - ${HOME:-~}/.aws:/home/node/.aws:ro
+    depends_on:
+      mongo:
+        condition: service_healthy
+    # Create indexes and seed reference data, then exit.
+    command: ["sh", "-c", "npm run db:indexes && npm run db:seed"]
+
+  app:
+    build:
+      context: .
+      target: runner
+    image: codka-bulshada:local
+    environment: *app-env
+    ports:
+      - "3000:3000"
+    volumes:
+      - ${HOME:-~}/.aws:/home/node/.aws:ro
+    depends_on:
+      mongo:
+        condition: service_healthy
+      tools:
+        condition: service_completed_successfully
+
+volumes:
+  mongo-data:

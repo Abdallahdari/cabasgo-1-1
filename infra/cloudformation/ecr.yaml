@@ -1,0 +1,31 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Codka Bulshada - ECR repositories (deploy once per account/region, before the app stack).
+
+Resources:
+  AppRepository:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: codka-bulshada
+      ImageTagMutability: IMMUTABLE
+      ImageScanningConfiguration: { ScanOnPush: true }
+      EncryptionConfiguration: { EncryptionType: AES256 }
+      LifecyclePolicy:
+        LifecyclePolicyText: |
+          {"rules":[{"rulePriority":1,"description":"Keep last 30 images","selection":{"tagStatus":"any","countType":"imageCountMoreThan","countNumber":30},"action":{"type":"expire"}}]}
+
+  ToolsRepository:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: codka-bulshada-tools
+      ImageTagMutability: IMMUTABLE
+      ImageScanningConfiguration: { ScanOnPush: true }
+      EncryptionConfiguration: { EncryptionType: AES256 }
+      LifecyclePolicy:
+        LifecyclePolicyText: |
+          {"rules":[{"rulePriority":1,"description":"Keep last 30 images","selection":{"tagStatus":"any","countType":"imageCountMoreThan","countNumber":30},"action":{"type":"expire"}}]}
+
+Outputs:
+  AppRepositoryUri:
+    Value: !GetAtt AppRepository.RepositoryUri
+  ToolsRepositoryUri:
+    Value: !GetAtt ToolsRepository.RepositoryUri

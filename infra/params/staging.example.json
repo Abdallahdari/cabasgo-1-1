@@ -1,0 +1,19 @@
+{
+  "EnvName": "staging",
+  "VpcId": "vpc-REPLACE",
+  "PublicSubnetIds": "subnet-REPLACE_A,subnet-REPLACE_B",
+  "PrivateSubnetIds": "subnet-REPLACE_C,subnet-REPLACE_D",
+  "DomainName": "staging.codka.example.org",
+  "OriginDomainName": "origin-staging.codka.example.org",
+  "HostedZoneId": "ZREPLACE",
+  "CloudFrontCertificateArn": "arn:aws:acm:us-east-1:111111111111:certificate/REPLACE",
+  "AlbCertificateArn": "arn:aws:acm:eu-west-1:111111111111:certificate/REPLACE",
+  "CloudFrontOriginPrefixListId": "pl-REPLACE",
+  "OriginVerifySecret": "REPLACE_WITH_64_RANDOM_CHARS_DO_NOT_COMMIT_THE_REAL_VALUE_xxxxxxxx",
+  "MongoUriSecretArn": "arn:aws:secretsmanager:eu-west-1:111111111111:secret:codka/staging/mongodb-uri-REPLACE",
+  "MongoDbName": "codka_bulshada_staging",
+  "SesFromEmail": "Codka Bulshada <no-reply@codka.example.org>",
+  "SesDomain": "codka.example.org",
+  "DesiredCount": "1",
+  "AlarmEmail": "ops@example.org"
+}

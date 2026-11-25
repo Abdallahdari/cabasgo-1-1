@@ -1,0 +1,45 @@
+# Render.com free deployment blueprint for Codka Bulshada.
+# Runs the production Docker image (the same `runner` target used for AWS ECS),
+# so this is a faithful pre-AWS test: real Node server, image uploads work,
+# no serverless body-size limits.
+#
+# Prerequisites you create (free, no credit card):
+#   1. A MongoDB Atlas M0 cluster -> connection string (a replica set, so
+#      transactions work exactly like production).
+#   2. A GitHub repo holding this project.
+#   3. A Render account connected to that repo.
+#
+# Then: Render Dashboard -> New -> Blueprint -> pick this repo. Render reads
+# this file, builds the Docker image, and asks you for the two secret values
+# marked `sync: false` (MONGODB_URI and APP_URL).
+services:
+  - type: web
+    name: codka-bulshada
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    plan: free
+    region: frankfurt            # closest free region to Somalia/EU; change if you like
+    healthCheckPath: /api/health
+    autoDeploy: true             # redeploy on every push to the connected branch
+    envVars:
+      # --- fixed config ---
+      - key: APP_ENV
+        value: development        # keeps SES/S3 optional; uses GridFS + console email
+      - key: STORAGE_DRIVER
+        value: mongodb            # images stored in MongoDB GridFS (no AWS needed)
+      - key: EMAIL_TRANSPORT
+        value: console            # verification/reset/invite links print to the Render logs
+      - key: REQUIRE_EMAIL_VERIFICATION
+        value: "false"            # users can post without verifying their email
+      - key: TRUSTED_PROXY_HOPS
+        value: "1"                # Render terminates TLS in front of the app
+      - key: MONGODB_DB_NAME
+        value: codka_bulshada
+      - key: NODE_ENV
+        value: production
+      # --- secrets / per-environment (you set these in the Render dashboard) ---
+      - key: MONGODB_URI
+        sync: false               # paste your Atlas connection string here
+      - key: APP_URL
+        sync: false               # set to your live URL, e.g. https://codka-bulshada.onrender.com
