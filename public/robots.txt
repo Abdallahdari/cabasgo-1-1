@@ -1,0 +1,7 @@
+# Codka Bulshada
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /settings
+Disallow: /me
+Disallow: /api
