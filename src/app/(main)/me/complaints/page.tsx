@@ -31,7 +31,7 @@ export default async function MyComplaintsPage({ searchParams }: PageProps<"/me/
       {data.items.length === 0 ? (
         <EmptyState title="Weli cabasho ma aadan gudbin." description="Marka aad gudbiso, halkan ayaad kala socon kartaa." />
       ) : (
-        <div className="space-y-6">
+        <div className="space-y-3">
           {data.items.map((c) => (
             <ComplaintCard key={c.id} complaint={c} signedIn showVisibility />
           ))}

@@ -286,7 +286,7 @@ export function ComplaintForm({
         )}
       </section>
 
-      <label className="flex cursor-pointer items-start gap-4 rounded-2xl border p-5 has-checked:border-primary has-checked:bg-secondary">
+      <label className="flex cursor-pointer items-start gap-4 rounded-lg border p-5 has-checked:border-primary has-checked:bg-secondary">
         <input
           type="checkbox"
           checked={isAnonymous}

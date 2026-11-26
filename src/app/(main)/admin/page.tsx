@@ -18,7 +18,7 @@ export default async function ModerationPage({ searchParams }: PageProps<"/admin
   return data.items.length === 0 ? (
     <EmptyState title="Wax sugaya ma jiraan." description="Dhammaan cabashooyinka cusub waa la eegay." />
   ) : (
-    <div className="space-y-6">
+    <div className="space-y-3">
       <p className="px-2 text-sm text-muted-foreground">{data.total} cabasho ayaa sugaya dib-u-eegis (kuwa ugu da&apos;da weyn marka hore). Fur mid si aad u ansixiso ama u diido.</p>
       {data.items.map((c) => (
         <div key={c.id}>

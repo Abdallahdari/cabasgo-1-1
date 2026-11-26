@@ -10,8 +10,8 @@ import { isStorageConfigured } from "@/server/storage";
 import { AppError } from "@/server/http/errors";
 import { getEnv } from "@/server/env";
 import { AuthorLine, locationLabel } from "@/components/complaints/complaint-card";
-import { StatusBadge, VisibilityBadge } from "@/components/complaints/status-badge";
-import { CategoryGlyph } from "@/components/complaints/category-icon";
+import { StatusBadge, StatusTrail, VisibilityBadge } from "@/components/complaints/status-badge";
+import { CategoryTile } from "@/components/complaints/category-icon";
 import { FollowButton, LikeButton } from "@/components/complaints/engagement-buttons";
 import { ComplaintMenu } from "@/components/complaints/report-dialog";
 import { CommentsSection } from "@/components/complaints/comments";
@@ -50,13 +50,13 @@ export default async function ComplaintPage({ params }: PageProps<"/complaints/[
   const staff = can(user?.role, "complaint:moderate");
 
   return (
-    <div className="rounded-[28px] bg-canvas p-3 sm:p-6 lg:p-8">
-      <Link href="/" className="mb-4 inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground">
+    <div>
+      <Link href="/" className="mb-3 inline-flex h-8 items-center gap-1.5 rounded-full pr-3 pl-2 text-sm font-semibold hover:bg-background text-muted-foreground hover:text-foreground">
         <ArrowLeft className="size-4" aria-hidden /> Dib ugu noqo cabashooyinka
       </Link>
 
       {!published ? (
-        <div className="mb-6 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900" role="status">
+        <div className="mb-3 rounded-lg border border-[#f0cf9a] bg-[#fff8ec] p-3.5 text-sm text-[#5c2d05]" role="status">
           <div className="flex items-center gap-2 font-semibold">
             <VisibilityBadge visibility={complaint.visibility} />
             {complaint.visibility === "PENDING"
@@ -69,48 +69,56 @@ export default async function ComplaintPage({ params }: PageProps<"/complaints/[
         </div>
       ) : null}
 
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_340px]">
-        <div className="min-w-0 space-y-6">
-          <article className="rounded-3xl bg-card p-5 sm:p-8" aria-labelledby="complaint-title">
-            <header className="flex items-start gap-4">
-              <UserAvatar name={complaint.author?.name} anonymous={complaint.isAnonymous} size={52} />
-              <div className="min-w-0 flex-1">
-                <AuthorLine complaint={complaint} />
-                <p className="mt-1 text-sm text-muted-foreground">
-                  {timeAgo(complaint.publishedAt ?? complaint.createdAt)} · {formatDate(complaint.createdAt)}
-                </p>
+      <div className="grid gap-3 xl:grid-cols-[minmax(0,1fr)_320px] xl:gap-6">
+        <div className="min-w-0 space-y-3">
+          <article className="rounded-lg border bg-card px-4 pt-4 pb-3 sm:px-6 sm:pt-5" aria-labelledby="complaint-title">
+            <header className="flex items-start gap-3">
+              <CategoryTile icon={complaint.category.icon} color={complaint.category.color} className="size-10 rounded-full [&_svg]:size-5" />
+              <div className="min-w-0 flex-1 text-[13px] leading-5">
+                <div className="flex flex-wrap items-center gap-x-1.5">
+                  <Link href={`/?categoryId=${complaint.category.id}`} className="font-bold hover:underline">
+                    {complaint.category.name}
+                  </Link>
+                  <span className="text-muted-foreground" aria-hidden>·</span>
+                  <time dateTime={complaint.publishedAt ?? complaint.createdAt} className="text-muted-foreground" title={formatDate(complaint.createdAt)}>
+                    {timeAgo(complaint.publishedAt ?? complaint.createdAt)}
+                  </time>
+                </div>
+                <div className="flex flex-wrap items-center gap-x-1.5 text-muted-foreground">
+                  <UserAvatar name={complaint.author?.name} anonymous={complaint.isAnonymous} size={18} />
+                  <AuthorLine complaint={complaint} className="font-medium text-foreground/80 [&_svg]:size-3.5" />
+                </div>
               </div>
               <ComplaintMenu complaintId={complaint.id} canReport={published && Boolean(user) && !complaint.viewer.isOwner} />
             </header>
 
-            <div className="mt-6 flex flex-wrap items-center gap-2">
-              <span
-                className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold"
-                style={{ backgroundColor: `${complaint.category.color}14`, color: complaint.category.color }}
-              >
-                <CategoryGlyph icon={complaint.category.icon} className="size-3.5" />
-                {complaint.category.name}
-              </span>
-              <StatusBadge status={complaint.status} />
-              <span className="font-mono text-xs text-muted-foreground">{complaint.referenceCode}</span>
-            </div>
-
-            <h1 id="complaint-title" className="mt-4 text-2xl leading-tight font-bold tracking-tight sm:text-[28px]">
+            <h1 id="complaint-title" className="mt-4 text-2xl leading-tight font-bold tracking-[-0.02em] text-balance sm:text-[26px]">
               {complaint.title}
             </h1>
-            <p className="mt-3 flex items-start gap-1.5 text-sm text-muted-foreground">
-              <MapPin className="mt-0.5 size-4 shrink-0" aria-hidden />
-              <span>
-                {locationLabel(complaint)}
-                {complaint.locationDetail ? ` — ${complaint.locationDetail}` : ""}
-              </span>
-            </p>
-            <div className="mt-5 leading-8 whitespace-pre-line text-foreground/90">{complaint.body}</div>
+            <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2">
+              <StatusBadge status={complaint.status} />
+              <StatusTrail status={complaint.status} />
+            </div>
+            <dl className="mt-3 grid gap-x-6 gap-y-1 rounded-md bg-surface-2 px-3 py-2.5 text-[13px] sm:grid-cols-[auto_1fr]">
+              <dt className="text-muted-foreground">Goobta</dt>
+              <dd className="flex items-start gap-1 font-medium">
+                <MapPin className="mt-0.5 size-3.5 shrink-0 text-muted-foreground" aria-hidden />
+                <span>
+                  {locationLabel(complaint)}
+                  {complaint.locationDetail ? ` — ${complaint.locationDetail}` : ""}
+                </span>
+              </dd>
+              <dt className="text-muted-foreground">Tixraac</dt>
+              <dd className="font-mono font-medium tracking-wide">{complaint.referenceCode}</dd>
+              <dt className="text-muted-foreground">La gudbiyay</dt>
+              <dd className="tabular font-medium">{formatDate(complaint.createdAt)}</dd>
+            </dl>
+            <div className="mt-4 max-w-[70ch] text-[16px] leading-7 whitespace-pre-line text-foreground/90">{complaint.body}</div>
 
             {complaint.images.length > 0 ? (
-              <div className="mt-6 grid gap-3 sm:grid-cols-2">
+              <div className="mt-4 grid gap-1 overflow-hidden rounded-lg border sm:grid-cols-2">
                 {complaint.images.map((img, i) => (
-                  <a key={img.id} href={img.url} target="_blank" rel="noopener noreferrer" className="block overflow-hidden rounded-2xl bg-muted">
+                  <a key={img.id} href={img.url} target="_blank" rel="noopener noreferrer" className="block overflow-hidden bg-muted">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={img.url} alt={`Sawirka ${i + 1} ee cabashada`} className="aspect-[4/3] w-full object-cover transition-transform hover:scale-[1.02]" />
                   </a>
@@ -118,7 +126,7 @@ export default async function ComplaintPage({ params }: PageProps<"/complaints/[
               </div>
             ) : null}
 
-            <footer className="mt-6 flex flex-wrap items-center gap-3 border-t pt-4">
+            <footer className="mt-4 flex flex-wrap items-center gap-2 border-t pt-3">
               <LikeButton
                 complaintId={complaint.id}
                 initialLiked={complaint.viewer.liked}
@@ -146,7 +154,7 @@ export default async function ComplaintPage({ params }: PageProps<"/complaints/[
           />
         </div>
 
-        <div className="space-y-6">
+        <div className="space-y-3">
           {staff ? (
             <StaffPanel complaintId={complaint.id} visibility={complaint.visibility} status={complaint.status} />
           ) : null}
@@ -159,11 +167,11 @@ export default async function ComplaintPage({ params }: PageProps<"/complaints/[
             />
           ) : null}
 
-          <section className="rounded-3xl bg-card p-5 sm:p-6" aria-labelledby="timeline-title">
-            <h2 id="timeline-title" className="flex items-center gap-2 font-bold">
-              <Clock className="size-5 text-primary" aria-hidden /> Taariikhda xaaladda
+          <section className="rounded-lg border bg-card p-4" aria-labelledby="timeline-title">
+            <h2 id="timeline-title" className="flex items-center gap-2 text-[15px] font-bold">
+              <Clock className="size-[18px] text-primary" aria-hidden /> Taariikhda xaaladda
             </h2>
-            <ol className="mt-5 space-y-5 border-l-2 border-border pl-5">
+            <ol className="mt-4 space-y-4 border-l-2 border-border pl-5">
               <li className="relative">
                 <span className="absolute top-1.5 -left-[27px] size-3 rounded-full border-2 border-card bg-muted-foreground" aria-hidden />
                 <p className="text-sm font-semibold">La gudbiyay</p>

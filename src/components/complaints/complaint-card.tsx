@@ -1,9 +1,8 @@
 import Link from "next/link";
-import { BadgeCheck, MapPin, MessageCircle, Users } from "lucide-react";
+import { BadgeCheck, MapPin, MessageSquare, Users } from "lucide-react";
 import type { ComplaintDTO } from "@/types";
-import { UserAvatar } from "@/components/user-avatar";
-import { StatusBadge, VisibilityBadge } from "@/components/complaints/status-badge";
-import { CategoryGlyph } from "@/components/complaints/category-icon";
+import { StatusBadge, StatusTrail, VisibilityBadge } from "@/components/complaints/status-badge";
+import { CategoryTile } from "@/components/complaints/category-icon";
 import { FollowButton, LikeButton } from "@/components/complaints/engagement-buttons";
 import { ComplaintMenu } from "@/components/complaints/report-dialog";
 import { compactNumber, timeAgo } from "@/lib/format";
@@ -14,45 +13,50 @@ export function locationLabel(c: ComplaintDTO) {
   return [c.district?.name, c.city.name, c.region.name].filter(Boolean).join(", ");
 }
 
-export function AuthorLine({ complaint }: { complaint: ComplaintDTO }) {
+export function AuthorLine({ complaint, className }: { complaint: ComplaintDTO; className?: string }) {
   const name = complaint.isAnonymous ? "Muwaadin qarsoodi" : (complaint.author?.name ?? "Muwaadin");
   const staff = complaint.author && complaint.author.role !== "CITIZEN";
   return (
-    <span className="flex items-center gap-1.5 text-[17px] font-bold">
+    <span className={cn("inline-flex items-center gap-1 font-semibold", className)}>
       {name}
       {staff ? (
-        <BadgeCheck className="size-[18px] fill-primary text-white" aria-label={ROLE_LABELS[complaint.author!.role]} />
+        <BadgeCheck className="size-4 fill-primary text-white" aria-label={ROLE_LABELS[complaint.author!.role]} />
       ) : null}
     </span>
   );
 }
 
-function ImageGrid({ images, title }: { images: ComplaintDTO["images"]; title: string }) {
+function ImageGrid({ images, title, href }: { images: ComplaintDTO["images"]; title: string; href: string }) {
   if (images.length === 0) return null;
   const shown = images.slice(0, 4);
+  const extra = images.length - shown.length;
   return (
-    <div
-      className={cn(
-        "mt-4 grid gap-2 overflow-hidden rounded-2xl",
-        shown.length === 1 ? "grid-cols-1" : "grid-cols-2",
-      )}
+    <Link
+      href={href}
+      className={cn("mt-3 grid gap-0.5 overflow-hidden rounded-lg border bg-muted", shown.length === 1 ? "grid-cols-1" : "grid-cols-2")}
+      tabIndex={-1}
+      aria-hidden
     >
       {shown.map((img, i) => (
-        // Presigned / CDN URLs vary per request, so next/image optimisation is not used here.
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          key={img.id}
-          src={img.url}
-          alt={`Sawirka ${i + 1} ee cabashada: ${title}`}
-          loading="lazy"
-          className={cn(
-            "w-full bg-muted object-cover",
-            shown.length === 1 ? "max-h-[420px]" : "aspect-[4/3]",
-            shown.length === 3 && i === 0 && "row-span-2 h-full",
-          )}
-        />
+        <span key={img.id} className={cn("relative block", shown.length === 3 && i === 0 && "row-span-2")}>
+          {/* Presigned / CDN URLs vary per request, so next/image optimisation is not used here. */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={img.url}
+            alt={`Sawirka ${i + 1} ee cabashada: ${title}`}
+            loading="lazy"
+            className={cn(
+              "w-full object-cover",
+              shown.length === 1 ? "max-h-[460px]" : "aspect-[4/3]",
+              shown.length === 3 && i === 0 && "h-full",
+            )}
+          />
+          {extra > 0 && i === shown.length - 1 ? (
+            <span className="absolute inset-0 flex items-center justify-center bg-black/55 text-2xl font-bold text-white">+{extra}</span>
+          ) : null}
+        </span>
       ))}
-    </div>
+    </Link>
   );
 }
 
@@ -67,83 +71,99 @@ export function ComplaintCard({
 }) {
   const href = `/complaints/${complaint.id}`;
   const published = complaint.visibility === "PUBLISHED";
-  return (
-    <article className="rounded-3xl bg-card p-5 shadow-[0_1px_2px_rgba(16,24,40,0.04)] sm:p-8" aria-labelledby={`c-${complaint.id}`}>
-      <header className="flex items-start gap-3 sm:gap-4">
-        <UserAvatar name={complaint.author?.name} anonymous={complaint.isAnonymous} size={52} />
-        <div className="min-w-0 flex-1">
-          <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1">
-            <AuthorLine complaint={complaint} />
-            {published && signedIn && !complaint.viewer.isOwner ? (
-              <>
-                <span className="text-muted-foreground" aria-hidden>
-                  •
-                </span>
-                <FollowButton complaintId={complaint.id} initialFollowing={complaint.viewer.following} />
-              </>
-            ) : null}
-          </div>
-          <div className="mt-1 flex flex-wrap items-center gap-x-2 text-sm text-muted-foreground">
-            <time dateTime={complaint.publishedAt ?? complaint.createdAt}>
-              {timeAgo(complaint.publishedAt ?? complaint.createdAt)}
-            </time>
-            <span aria-hidden>·</span>
-            <span className="inline-flex items-center gap-1">
-              <MapPin className="size-3.5" aria-hidden />
-              {locationLabel(complaint)}
-            </span>
-          </div>
-        </div>
-        <ComplaintMenu complaintId={complaint.id} canReport={published && !complaint.viewer.isOwner} />
-      </header>
+  const when = complaint.publishedAt ?? complaint.createdAt;
 
-      <div className="mt-5 flex flex-wrap items-center gap-2">
-        <Link
-          href={`/?categoryId=${complaint.category.id}`}
-          className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold"
-          style={{ backgroundColor: `${complaint.category.color}14`, color: complaint.category.color }}
-        >
-          <CategoryGlyph icon={complaint.category.icon} className="size-3.5" />
-          {complaint.category.name}
-        </Link>
-        <StatusBadge status={complaint.status} />
-        {showVisibility && !published ? <VisibilityBadge visibility={complaint.visibility} /> : null}
+  return (
+    <article
+      className="group/card flex overflow-hidden rounded-lg border bg-card transition-colors hover:border-[#b9c2ce]"
+      aria-labelledby={`c-${complaint.id}`}
+    >
+      {/* Support rail (desktop) */}
+      <div className="hidden w-14 shrink-0 flex-col items-center bg-surface-2 px-1.5 pt-2.5 sm:flex">
+        <LikeButton
+          variant="rail"
+          complaintId={complaint.id}
+          initialLiked={complaint.viewer.liked}
+          initialCount={complaint.likeCount}
+          disabled={!published}
+        />
       </div>
 
-      <h2 id={`c-${complaint.id}`} className="mt-3 text-lg leading-snug font-bold sm:text-xl">
-        <Link href={href} className="hover:text-primary">
-          {complaint.title}
-        </Link>
-      </h2>
-      <p className="mt-2 line-clamp-4 leading-7 whitespace-pre-line text-foreground/85">{complaint.body}</p>
+      <div className="min-w-0 flex-1 px-4 pt-3 pb-2 sm:pl-4 sm:pr-5">
+        <header className="flex items-start gap-2.5">
+          <Link href={`/?categoryId=${complaint.category.id}`} className="mt-0.5 shrink-0" aria-hidden tabIndex={-1}>
+            <CategoryTile icon={complaint.category.icon} color={complaint.category.color} className="size-8 rounded-full [&_svg]:size-4" />
+          </Link>
+          <div className="min-w-0 flex-1 text-[13px] leading-5">
+            <div className="flex flex-wrap items-center gap-x-1.5">
+              <Link href={`/?categoryId=${complaint.category.id}`} className="font-bold text-foreground hover:underline">
+                {complaint.category.name}
+              </Link>
+              <span className="text-muted-foreground" aria-hidden>·</span>
+              <time dateTime={when} className="text-muted-foreground">
+                {timeAgo(when)}
+              </time>
+              {published && signedIn && !complaint.viewer.isOwner ? (
+                <span className="ml-1">
+                  <FollowButton complaintId={complaint.id} initialFollowing={complaint.viewer.following} />
+                </span>
+              ) : null}
+            </div>
+            <div className="flex flex-wrap items-center gap-x-1.5 text-muted-foreground">
+              <AuthorLine complaint={complaint} className="font-medium text-foreground/80 [&_svg]:size-3.5" />
+              <span aria-hidden>·</span>
+              <span className="inline-flex min-w-0 items-center gap-1">
+                <MapPin className="size-3.5 shrink-0" aria-hidden />
+                <span className="truncate">{locationLabel(complaint)}</span>
+              </span>
+            </div>
+          </div>
+          <ComplaintMenu complaintId={complaint.id} canReport={published && !complaint.viewer.isOwner} />
+        </header>
 
-      <ImageGrid images={complaint.images} title={complaint.title} />
+        <h2 id={`c-${complaint.id}`} className="mt-2.5 text-lg leading-snug font-bold tracking-[-0.01em] text-balance">
+          <Link href={href} className="hover:text-primary">
+            {complaint.title}
+          </Link>
+        </h2>
 
-      <footer className="mt-5 flex flex-wrap items-center justify-between gap-2 border-t pt-3">
-        <div className="flex items-center gap-1">
-          <LikeButton
-            complaintId={complaint.id}
-            initialLiked={complaint.viewer.liked}
-            initialCount={complaint.likeCount}
-            disabled={!published}
-          />
+        <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-2">
+          <StatusBadge status={complaint.status} />
+          <StatusTrail status={complaint.status} showLabel={false} />
+          {showVisibility && !published ? <VisibilityBadge visibility={complaint.visibility} /> : null}
+        </div>
+
+        <p className="mt-2.5 line-clamp-3 text-[15px] leading-6 whitespace-pre-line text-foreground/85">{complaint.body}</p>
+
+        <ImageGrid images={complaint.images} title={complaint.title} href={href} />
+
+        <footer className="mt-2 flex flex-wrap items-center gap-1 text-[13px]">
+          <span className="sm:hidden">
+            <LikeButton
+              complaintId={complaint.id}
+              initialLiked={complaint.viewer.liked}
+              initialCount={complaint.likeCount}
+              disabled={!published}
+            />
+          </span>
           <Link
             href={`${href}#faallooyin`}
-            className="inline-flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
+            className="inline-flex h-9 items-center gap-1.5 rounded-full px-3 font-semibold text-foreground/75 transition-colors hover:bg-muted hover:text-foreground"
           >
-            <MessageCircle className="size-[18px]" aria-hidden />
+            <MessageSquare className="size-[18px]" aria-hidden />
+            <span className="tabular">{compactNumber(complaint.commentCount)}</span>
             <span className="hidden sm:inline">Faallooyin</span>
-            <span className="tabular-nums">{compactNumber(complaint.commentCount)}</span>
           </Link>
-        </div>
-        <div className="flex items-center gap-3 text-xs text-muted-foreground">
-          <span className="inline-flex items-center gap-1" title="Dadka raacaya">
-            <Users className="size-3.5" aria-hidden />
-            {compactNumber(complaint.followerCount)}
+          <span className="inline-flex h-9 items-center gap-1.5 px-3 font-semibold text-foreground/75" title="Dadka raacaya">
+            <Users className="size-[18px]" aria-hidden />
+            <span className="tabular">{compactNumber(complaint.followerCount)}</span>
+            <span className="hidden sm:inline">raacaya</span>
           </span>
-          <span className="font-mono">{complaint.referenceCode}</span>
-        </div>
-      </footer>
+          <span className="ml-auto font-mono text-xs tracking-wide text-muted-foreground" title="Lambarka tixraaca">
+            {complaint.referenceCode}
+          </span>
+        </footer>
+      </div>
     </article>
   );
 }

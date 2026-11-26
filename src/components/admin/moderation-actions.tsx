@@ -41,7 +41,7 @@ export function ModerationActions({ complaintId, imageCount }: { complaintId: st
   }
 
   return (
-    <div className="-mt-3 rounded-b-3xl border-t-2 border-dashed border-amber-200 bg-amber-50/70 px-5 py-4 sm:px-8">
+    <div className="-mt-1.5 rounded-lg border border-[#f0cf9a] bg-[#fff8ec] px-4 py-3 sm:px-5">
       {imageCount > 0 ? (
         <p className="mb-3 text-sm font-medium text-amber-900">
           Hubi {imageCount} sawir ka hor intaadan ansixin — waxyaabo anshax xumo ama galmo ah lama daabici karo.

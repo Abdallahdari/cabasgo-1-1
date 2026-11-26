@@ -83,7 +83,7 @@ export function OwnerPanel({
   }
 
   return (
-    <section className="rounded-3xl bg-card p-5 sm:p-6" aria-labelledby="owner-title">
+    <section className="rounded-lg border bg-card p-5 sm:p-6" aria-labelledby="owner-title">
       <h2 id="owner-title" className="font-bold">
         Cabashadaada
       </h2>

@@ -18,7 +18,7 @@ export default async function AuditPage({ searchParams }: PageProps<"/admin/audi
   const data = await listAuditLogs(page, 30);
   return (
     <div className="space-y-4">
-      <div className="overflow-x-auto rounded-3xl bg-card p-2 sm:p-4">
+      <div className="overflow-x-auto rounded-lg border bg-card p-2 sm:p-4">
         <Table>
           <TableHeader>
             <TableRow>

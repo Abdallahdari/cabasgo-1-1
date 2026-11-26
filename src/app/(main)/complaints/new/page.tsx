@@ -15,8 +15,8 @@ export default async function NewComplaintPage({ searchParams }: PageProps<"/com
   const [categories, regions] = await Promise.all([listCategories(), listRegions()]);
 
   return (
-    <div className="rounded-[28px] bg-canvas p-3 sm:p-6 lg:p-8">
-      <div className="mx-auto max-w-3xl rounded-3xl bg-card p-5 sm:p-10">
+    <div>
+      <div className="mx-auto max-w-3xl rounded-lg border bg-card p-5 sm:p-8">
         <h1 className="text-2xl font-bold tracking-tight">Gudbi cabasho cusub</h1>
         <p className="mt-2 text-muted-foreground">
           Cabashadaadu waxay marka hore sugaysaa dib-u-eegis tifaftire ka hor inta aan la daabicin. Ha ku darin
@@ -24,7 +24,7 @@ export default async function NewComplaintPage({ searchParams }: PageProps<"/com
         </p>
 
         {getEnv().REQUIRE_EMAIL_VERIFICATION && !user.emailVerified ? (
-          <div className="mt-6 flex items-start gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+          <div className="mt-6 flex items-start gap-3 rounded-lg border border-[#f0cf9a] bg-[#fff8ec] p-4 text-sm text-[#5c2d05]">
             <MailWarning className="mt-0.5 size-5 shrink-0" aria-hidden />
             <p>
               Si aad cabasho u gudbiso, marka hore xaqiiji email-kaaga.{" "}

@@ -27,7 +27,7 @@ export function UsersTable({ users, currentUserId }: { users: AdminUserDTO[]; cu
   }
 
   return (
-    <div className="overflow-x-auto rounded-3xl bg-card p-2 sm:p-4">
+    <div className="overflow-x-auto rounded-lg border bg-card p-2 sm:p-4">
       <Table>
         <TableHeader>
           <TableRow>

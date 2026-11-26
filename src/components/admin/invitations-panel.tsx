@@ -52,7 +52,7 @@ export function InvitationsPanel({ invitations }: { invitations: InvitationDTO[]
 
   return (
     <div className="space-y-6">
-      <form onSubmit={invite} className="rounded-3xl bg-card p-5 sm:p-6">
+      <form onSubmit={invite} className="rounded-lg border bg-card p-5 sm:p-6">
         <h2 className="font-bold">Casuun Tifaftire cusub</h2>
         <p className="mt-1 text-sm text-muted-foreground">
           Xiriirka casuumaddu waa hal mar isticmaal, wuxuuna dhacayaa 72 saac kadib. Maamulayaasha oo keliya ayaa casuumi kara.
@@ -78,7 +78,7 @@ export function InvitationsPanel({ invitations }: { invitations: InvitationDTO[]
         </div>
       </form>
 
-      <div className="overflow-x-auto rounded-3xl bg-card p-2 sm:p-4">
+      <div className="overflow-x-auto rounded-lg border bg-card p-2 sm:p-4">
         <Table>
           <TableHeader>
             <TableRow>

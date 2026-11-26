@@ -36,10 +36,10 @@ export function UserMenu({ name, role }: { name: string; role: Role }) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        className="flex items-center gap-2 rounded-full p-1 pr-2 outline-none hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50"
+        className="flex items-center gap-1 rounded-full p-1 pr-1.5 outline-none hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50"
         aria-label="Menu-ga akoonka"
       >
-        <UserAvatar name={name} size={44} />
+        <UserAvatar name={name} size={32} />
         <ChevronDown className="size-4 text-muted-foreground" aria-hidden />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56">

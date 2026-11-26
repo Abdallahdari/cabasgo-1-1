@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 // Self-hosted (bundled at build time) so Docker/CI builds need no network access to Google Fonts.
-import "@fontsource-variable/plus-jakarta-sans";
+import "@fontsource-variable/public-sans";
 import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 
@@ -18,14 +18,14 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 export const viewport: Viewport = {
-  themeColor: "#2f6fed",
+  themeColor: "#1a5db5",
   colorScheme: "light",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="so" className="h-full antialiased">
-      <body className="min-h-full bg-background text-foreground">
+      <body className="min-h-full bg-canvas text-foreground">
         {children}
         <Toaster position="top-center" richColors closeButton />
       </body>

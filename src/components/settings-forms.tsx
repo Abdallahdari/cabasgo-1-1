@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { api, errorMessage } from "@/lib/api-client";
 import { ROLE_LABELS, type Role } from "@/lib/constants";
 
-const card = "rounded-3xl bg-card p-5 sm:p-8";
+const card = "rounded-lg border bg-card p-4 sm:p-6";
 
 export function SettingsForms({
   profile,

@@ -41,7 +41,7 @@ export function NotificationsList({ items, unread }: { items: NotificationDTO[];
   }
 
   return (
-    <div className="rounded-3xl bg-card p-3 sm:p-6">
+    <div className="rounded-lg border bg-card p-3 sm:p-6">
       <div className="mb-2 flex items-center justify-between px-2">
         <p className="text-sm text-muted-foreground">{unread} aan la akhrin</p>
         <Button variant="ghost" onClick={markAll} disabled={pending || unread === 0} className="rounded-xl">
@@ -52,7 +52,7 @@ export function NotificationsList({ items, unread }: { items: NotificationDTO[];
         {items.map((n) => {
           const Icon = ICON[n.type] ?? Bell;
           const content = (
-            <div className={cn("flex gap-4 rounded-2xl p-3 transition-colors hover:bg-muted", !n.read && "bg-secondary/60")}>
+            <div className={cn("flex gap-4 rounded-lg p-3 transition-colors hover:bg-muted", !n.read && "bg-secondary/60")}>
               <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-secondary text-primary">
                 <Icon className="size-5" aria-hidden />
               </span>

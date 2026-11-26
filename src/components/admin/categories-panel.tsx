@@ -42,7 +42,7 @@ export function CategoriesPanel({ categories }: { categories: Category[] }) {
   return (
     <div className="space-y-6">
       <form
-        className="grid gap-4 rounded-3xl bg-card p-5 sm:grid-cols-[1fr_1fr_160px_100px_auto] sm:items-end sm:p-6"
+        className="grid gap-4 rounded-lg border bg-card p-5 sm:grid-cols-[1fr_1fr_160px_100px_auto] sm:items-end sm:p-6"
         onSubmit={(e) => {
           e.preventDefault();
           run(async () => {
@@ -111,7 +111,7 @@ export function CategoriesPanel({ categories }: { categories: Category[] }) {
 
       <ul className="grid gap-3 sm:grid-cols-2">
         {categories.map((c) => (
-          <li key={c.id} className="flex items-center gap-4 rounded-2xl bg-card p-4">
+          <li key={c.id} className="flex items-center gap-4 rounded-lg border bg-card p-4">
             <CategoryTile icon={c.icon} color={c.color} />
             <div className="min-w-0 flex-1">
               <p className="font-semibold">{c.name}</p>

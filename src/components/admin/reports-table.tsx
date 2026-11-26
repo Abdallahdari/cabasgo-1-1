@@ -31,13 +31,13 @@ export function ReportsTable({ reports }: { reports: ReportDTO[] }) {
   }
 
   if (reports.length === 0) {
-    return <p className="rounded-3xl bg-card p-10 text-center text-muted-foreground">Warbixin ma jirto.</p>;
+    return <p className="rounded-lg border bg-card p-10 text-center text-muted-foreground">Warbixin ma jirto.</p>;
   }
 
   return (
     <ul className="space-y-4">
       {reports.map((r) => (
-        <li key={r.id} className="rounded-3xl bg-card p-5 sm:p-6">
+        <li key={r.id} className="rounded-lg border bg-card p-5 sm:p-6">
           <div className="flex flex-wrap items-center gap-2 text-sm">
             <span className="rounded-full bg-red-50 px-2.5 py-1 text-xs font-semibold text-red-700">
               {REPORT_REASON_LABELS[r.reason]}

@@ -75,7 +75,7 @@ export function StaffPanel({
   }
 
   return (
-    <section className="rounded-3xl border-2 border-primary/15 bg-card p-5 sm:p-6" aria-labelledby="staff-title">
+    <section className="rounded-lg border border-primary/30 bg-card p-5 sm:p-6" aria-labelledby="staff-title">
       <h2 id="staff-title" className="flex items-center gap-2 font-bold">
         <ShieldCheck className="size-5 text-primary" aria-hidden /> Ficillada shaqaalaha
       </h2>

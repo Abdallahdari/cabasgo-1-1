@@ -19,7 +19,7 @@ export default async function FollowingPage({ searchParams }: PageProps<"/me/fol
       {data.items.length === 0 ? (
         <EmptyState title="Ma raacaysid wax cabasho ah." description="Riix “Raac” cabasho kasta si aad u hesho wararkeeda." />
       ) : (
-        <div className="space-y-6">
+        <div className="space-y-3">
           {data.items.map((c) => (
             <ComplaintCard key={c.id} complaint={c} signedIn />
           ))}

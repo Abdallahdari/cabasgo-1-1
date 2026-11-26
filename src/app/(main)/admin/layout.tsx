@@ -17,10 +17,10 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
       : []),
   ];
   return (
-    <div className="rounded-[28px] bg-canvas p-3 sm:p-6 lg:p-8">
-      <div className="mb-6 px-2 sm:px-0">
-        <h1 className="text-2xl font-bold tracking-tight">Maamulka</h1>
-        <p className="mt-1 text-muted-foreground">Dib u eeg cabashooyinka, xalli warbixinnada, maamul nidaamka.</p>
+    <div>
+      <div className="mb-4 px-1 sm:px-0">
+        <h1 className="text-[22px] font-bold tracking-[-0.02em]">Maamulka</h1>
+        <p className="mt-0.5 text-sm text-muted-foreground">Dib u eeg cabashooyinka, xalli warbixinnada, maamul nidaamka.</p>
       </div>
       <AdminTabs tabs={tabs} />
       <div className="mt-6">{children}</div>

@@ -1,10 +1,7 @@
+import { Suspense } from "react";
 import Link from "next/link";
-import { BadgeCheck } from "lucide-react";
 import { NavLinks, type NavItem } from "@/components/layout/nav-links";
-import { UserAvatar } from "@/components/user-avatar";
-import { Button } from "@/components/ui/button";
-import { ROLE_LABELS } from "@/lib/constants";
-import { compactNumber } from "@/lib/format";
+import { CommunityLinks, type CommunityLink } from "@/components/layout/community-links";
 import type { SessionUser } from "@/server/auth/session";
 
 export function buildNav(user: SessionUser | null, unread: number, pendingReview = 0): NavItem[] {
@@ -22,85 +19,54 @@ export function buildNav(user: SessionUser | null, unread: number, pendingReview
   return items;
 }
 
-type RegionLink = { id: string; name: string; count: number };
+function SectionTitle({ children }: { children: React.ReactNode }) {
+  return <h2 className="mb-1 px-3 text-xs font-semibold tracking-[0.06em] text-muted-foreground uppercase">{children}</h2>;
+}
 
 export function Sidebar({
   user,
   unread,
-  stats,
-  regions,
+  categories,
   pendingReview = 0,
 }: {
   user: SessionUser | null;
   unread: number;
   pendingReview?: number;
-  stats: { submitted: number; resolved: number; following: number } | null;
-  regions: RegionLink[];
+  categories: CommunityLink[];
 }) {
   return (
-    <aside className="sticky top-[88px] hidden h-[calc(100dvh-88px)] w-[248px] shrink-0 flex-col gap-8 overflow-y-auto pt-2 pb-8 lg:flex">
-      {user && stats ? (
-        <div className="rounded-2xl bg-canvas p-4">
-          <div className="flex items-center gap-3">
-            <UserAvatar name={user.name} size={44} />
-            <div className="min-w-0">
-              <div className="flex items-center gap-1 font-semibold">
-                <span className="truncate">{user.name}</span>
-                {user.role !== "CITIZEN" ? <BadgeCheck className="size-4 shrink-0 fill-primary text-white" aria-label="Shaqaale la xaqiijiyay" /> : null}
-              </div>
-              <div className="text-xs text-muted-foreground">{ROLE_LABELS[user.role]}</div>
-            </div>
-          </div>
-          <dl className="mt-4 grid grid-cols-3 text-center">
-            {[
-              ["Cabasho", stats.submitted],
-              ["La xaliyay", stats.resolved],
-              ["Raacid", stats.following],
-            ].map(([label, value]) => (
-              <div key={label as string}>
-                <dd className="font-bold">{compactNumber(value as number)}</dd>
-                <dt className="text-[11px] text-muted-foreground">{label}</dt>
-              </div>
-            ))}
-          </dl>
-        </div>
-      ) : (
-        <div className="rounded-2xl bg-canvas p-5">
-          <p className="font-semibold">Codkaagu waa muhiim.</p>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Ka warbixi dhibaatooyinka adeegyada dadweynaha, la soco xalintooda.
-          </p>
-          <Button asChild className="mt-4 h-10 w-full rounded-xl">
-            <Link href="/register">Bilow hadda</Link>
-          </Button>
-        </div>
-      )}
-
+    <aside className="sticky top-14 hidden h-[calc(100dvh-3.5rem)] w-[240px] shrink-0 flex-col overflow-y-auto py-4 [scrollbar-width:none] hover:[scrollbar-width:thin] lg:flex">
       <nav aria-label="Hagaha ugu weyn">
         <NavLinks items={buildNav(user, unread, pendingReview)} />
       </nav>
 
-      {regions.length > 0 ? (
-        <div>
-          <h2 className="mb-3 px-1 text-xs font-semibold tracking-wider text-muted-foreground uppercase">Gobollada</h2>
-          <ul className="space-y-1">
-            {regions.map((r) => (
-              <li key={r.id}>
-                <Link
-                  href={`/?regionId=${r.id}`}
-                  className="flex items-center gap-3 rounded-xl px-1 py-2 text-sm font-medium hover:bg-muted"
-                >
-                  <span className="flex size-10 items-center justify-center rounded-xl bg-secondary text-sm font-bold text-secondary-foreground">
-                    {r.name.slice(0, 2).toUpperCase()}
-                  </span>
-                  <span className="flex-1 truncate">{r.name}</span>
-                  <span className="rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground">{r.count}</span>
-                </Link>
-              </li>
-            ))}
-          </ul>
+      {categories.length > 0 ? (
+        <div className="mt-4 border-t pt-4">
+          <SectionTitle>Qaybaha</SectionTitle>
+          <Suspense fallback={null}>
+            <CommunityLinks items={categories} />
+          </Suspense>
         </div>
       ) : null}
+
+      {!user ? (
+        <div className="mt-4 border-t px-3 pt-4">
+          <p className="text-sm font-semibold">Codkaagu waa muhiim.</p>
+          <p className="mt-1 text-[13px] leading-5 text-muted-foreground">
+            Ka warbixi dhibaatooyinka adeegyada dadweynaha, la soco xalintooda.
+          </p>
+          <Link
+            href="/register"
+            className="mt-3 flex h-9 items-center justify-center rounded-full bg-primary text-sm font-semibold text-primary-foreground hover:bg-primary/90"
+          >
+            Bilow hadda
+          </Link>
+        </div>
+      ) : null}
+
+      <p className="mt-auto px-3 pt-6 text-xs leading-5 text-muted-foreground">
+        Codka Bulshada · Madal dadweyne oo furan
+      </p>
     </aside>
   );
 }

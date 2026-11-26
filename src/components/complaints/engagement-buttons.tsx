@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
-import { ThumbsUp } from "lucide-react";
+import { ArrowBigUp } from "lucide-react";
 import { toast } from "sonner";
 import { api, ApiError, errorMessage } from "@/lib/api-client";
 import { compactNumber } from "@/lib/format";
@@ -24,11 +24,14 @@ export function LikeButton({
   initialLiked,
   initialCount,
   disabled,
+  variant = "bar",
 }: {
   complaintId: string;
   initialLiked: boolean;
   initialCount: number;
   disabled?: boolean;
+  /** "rail": vertical support column beside a post; "bar": inline pill in an action row. */
+  variant?: "bar" | "rail";
 }) {
   const [liked, setLiked] = useState(initialLiked);
   const [count, setCount] = useState(initialCount);
@@ -54,20 +57,49 @@ export function LikeButton({
     });
   }
 
+  const label = liked ? "Ka noqo taageerada" : "Taageer cabashadan";
+
+  if (variant === "rail") {
+    return (
+      <button
+        type="button"
+        onClick={toggle}
+        disabled={pending || disabled}
+        aria-pressed={liked}
+        aria-label={`${label} (${count})`}
+        className={cn(
+          "group flex w-full flex-col items-center gap-0.5 rounded-md py-1.5 text-[13px] font-bold transition-colors disabled:opacity-60",
+          liked ? "text-support" : "text-foreground/80 hover:text-support",
+        )}
+      >
+        <span
+          className={cn(
+            "flex size-8 items-center justify-center rounded-md transition-colors",
+            liked ? "bg-support-soft" : "group-hover:bg-support-soft",
+          )}
+        >
+          <ArrowBigUp className={cn("size-6 transition-transform group-active:-translate-y-0.5", liked && "fill-support")} aria-hidden />
+        </span>
+        <span className="tabular">{compactNumber(count)}</span>
+      </button>
+    );
+  }
+
   return (
     <button
       type="button"
       onClick={toggle}
       disabled={pending || disabled}
       aria-pressed={liked}
+      aria-label={`${label} (${count})`}
       className={cn(
-        "inline-flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium transition-colors disabled:opacity-60",
-        liked ? "bg-secondary text-primary" : "text-muted-foreground hover:bg-muted hover:text-foreground",
+        "inline-flex h-9 items-center gap-1.5 rounded-full pr-3.5 pl-2 text-sm font-semibold transition-colors disabled:opacity-60",
+        liked ? "bg-support-soft text-support" : "bg-muted text-foreground/80 hover:bg-support-soft hover:text-support",
       )}
     >
-      <ThumbsUp className={cn("size-[18px]", liked && "fill-primary/20")} aria-hidden />
+      <ArrowBigUp className={cn("size-5", liked && "fill-support")} aria-hidden />
       <span>Taageer</span>
-      <span className="tabular-nums">{compactNumber(count)}</span>
+      <span className="tabular">{compactNumber(count)}</span>
     </button>
   );
 }
@@ -107,8 +139,8 @@ export function FollowButton({
         disabled={pending}
         aria-pressed={following}
         className={cn(
-          "inline-flex h-10 items-center rounded-xl px-4 text-sm font-semibold transition-colors disabled:opacity-60",
-          following ? "bg-secondary text-primary" : "bg-primary text-primary-foreground hover:bg-primary/90",
+          "inline-flex h-9 items-center rounded-full px-4 text-sm font-semibold transition-colors disabled:opacity-60",
+          following ? "bg-secondary text-secondary-foreground hover:bg-secondary/70" : "bg-primary text-primary-foreground hover:bg-primary/90",
         )}
       >
         {following ? "Waad raacaysaa" : "Raac cabashada"}
@@ -122,9 +154,9 @@ export function FollowButton({
       onClick={toggle}
       disabled={pending}
       aria-pressed={following}
-      className="text-sm font-semibold text-primary hover:underline disabled:opacity-60"
+      className={cn("inline-flex h-6 items-center rounded-full px-2.5 text-xs font-semibold transition-colors disabled:opacity-60", following ? "bg-muted text-muted-foreground" : "bg-primary text-primary-foreground hover:bg-primary/90")}
     >
-      {following ? "Waad raacaysaa" : "Raac"}
+      {following ? "Waad raacaysaa" : "+ Raac"}
     </button>
   );
 }

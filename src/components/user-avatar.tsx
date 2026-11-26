@@ -2,7 +2,7 @@ import { EyeOff } from "lucide-react";
 import { initials } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
-const PALETTE = ["#2f6fed", "#7c3aed", "#0ea5e9", "#16a34a", "#d97706", "#db2777", "#0891b2", "#4f46e5"];
+const PALETTE = ["#1a5db5", "#6d3fc0", "#0b7285", "#17803d", "#b45309", "#b42a6a", "#c2410c", "#3b4fc4"];
 
 function colorFor(name: string) {
   let h = 0;
@@ -27,7 +27,7 @@ export function UserAvatar({
     return (
       <span
         className={cn(
-          "flex shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-slate-600 to-slate-800 text-white",
+          "flex shrink-0 items-center justify-center rounded-full bg-[#3a4352] text-white",
           className,
         )}
         style={style}

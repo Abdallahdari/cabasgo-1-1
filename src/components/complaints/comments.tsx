@@ -73,7 +73,7 @@ export function CommentsSection({
   }
 
   return (
-    <section id="faallooyin" className="scroll-mt-28 rounded-3xl bg-card p-5 sm:p-8" aria-labelledby="comments-title">
+    <section id="faallooyin" className="scroll-mt-28 rounded-lg border bg-card p-4 sm:p-6" aria-labelledby="comments-title">
       <h2 id="comments-title" className="text-lg font-bold">
         Faallooyin ({comments.filter((c) => !c.hidden).length})
       </h2>
@@ -87,7 +87,7 @@ export function CommentsSection({
               key={c.id}
               className={cn(
                 "flex gap-3",
-                c.isOfficial && "-mx-3 rounded-2xl bg-secondary/70 p-3",
+                c.isOfficial && "-mx-3 rounded-lg bg-secondary/70 p-3",
                 c.hidden && "opacity-60",
               )}
             >

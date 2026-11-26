@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Bell, Search, SquarePen } from "lucide-react";
+import { Bell, Plus, Search } from "lucide-react";
 import { Brand, BrandMark } from "@/components/brand";
 import { Button } from "@/components/ui/button";
 import { UserMenu } from "@/components/layout/user-menu";
@@ -7,49 +7,50 @@ import type { SessionUser } from "@/server/auth/session";
 
 export function SiteHeader({ user, unread, q }: { user: SessionUser | null; unread: number; q?: string }) {
   return (
-    <header className="sticky top-0 z-30 border-b border-border/60 bg-background/90 backdrop-blur supports-[backdrop-filter]:bg-background/75">
-      <div className="mx-auto flex h-20 max-w-[1440px] items-center gap-4 px-4 lg:h-[88px] lg:px-8">
-        <div className="hidden w-[248px] shrink-0 lg:block">
+    <header className="sticky top-0 z-30 border-b bg-background">
+      <div className="mx-auto flex h-14 max-w-[1320px] items-center gap-3 px-3 sm:gap-4 lg:px-5">
+        <div className="hidden w-[240px] shrink-0 lg:block">
           <Brand />
         </div>
         <Link href="/" className="lg:hidden" aria-label="Bogga hore">
           <BrandMark />
         </Link>
 
-        <form action="/" method="get" role="search" className="ml-auto w-full max-w-sm lg:ml-[100px] lg:max-w-md xl:ml-auto xl:mr-6">
+        <form action="/" method="get" role="search" className="mx-auto w-full max-w-[600px] flex-1">
           <label htmlFor="site-search" className="sr-only">
             Raadi cabashooyin
           </label>
           <div className="relative">
-            <Search className="pointer-events-none absolute top-1/2 left-4 size-5 -translate-y-1/2 text-muted-foreground" aria-hidden />
+            <Search className="pointer-events-none absolute top-1/2 left-3.5 size-[18px] -translate-y-1/2 text-muted-foreground" aria-hidden />
             <input
               id="site-search"
               name="q"
+              type="search"
               defaultValue={q}
               maxLength={100}
               placeholder="Raadi cabashooyin, goobo ama qaybo…"
-              className="h-12 w-full rounded-xl border border-transparent bg-canvas pr-4 pl-12 text-sm outline-none placeholder:text-muted-foreground focus:border-primary/40 focus:bg-background focus:ring-3 focus:ring-primary/15"
+              className="h-10 w-full rounded-full border border-transparent bg-muted pr-4 pl-10 text-sm outline-none transition-colors placeholder:text-muted-foreground hover:border-input focus:border-primary focus:bg-background"
             />
           </div>
         </form>
 
         {user ? (
-          <div className="flex items-center gap-2 sm:gap-4">
+          <div className="flex shrink-0 items-center gap-1 sm:gap-2">
             <Link
               href="/complaints/new"
-              className="hidden size-11 items-center justify-center rounded-xl text-muted-foreground hover:bg-muted hover:text-foreground sm:flex"
-              aria-label="Cabasho cusub"
+              className="hidden h-10 items-center gap-1.5 rounded-full bg-primary pr-4 pl-3 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 sm:inline-flex"
             >
-              <SquarePen className="size-6" aria-hidden />
+              <Plus className="size-[18px]" aria-hidden />
+              Cabasho cusub
             </Link>
             <Link
               href="/notifications"
-              className="relative flex size-11 items-center justify-center rounded-xl text-muted-foreground hover:bg-muted hover:text-foreground"
+              className="relative flex size-10 items-center justify-center rounded-full text-foreground/80 transition-colors hover:bg-muted hover:text-foreground"
               aria-label={unread ? `Ogeysiisyo (${unread} cusub)` : "Ogeysiisyo"}
             >
-              <Bell className="size-6" aria-hidden />
+              <Bell className="size-[22px]" aria-hidden />
               {unread > 0 ? (
-                <span className="absolute -top-0.5 right-0 flex min-w-[22px] items-center justify-center rounded-full border-2 border-background bg-destructive px-1 text-[11px] leading-[18px] font-bold text-white">
+                <span className="tabular absolute top-0.5 right-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-destructive px-1 text-[11px] font-bold text-white ring-2 ring-background">
                   {unread > 9 ? "9+" : unread}
                 </span>
               ) : null}
@@ -57,11 +58,11 @@ export function SiteHeader({ user, unread, q }: { user: SessionUser | null; unre
             <UserMenu name={user.name} role={user.role} />
           </div>
         ) : (
-          <div className="flex items-center gap-2">
-            <Button asChild variant="ghost" size="lg" className="h-11 px-4">
+          <div className="flex shrink-0 items-center gap-2">
+            <Button asChild variant="ghost" className="h-10 rounded-full px-4">
               <Link href="/login">Gal</Link>
             </Button>
-            <Button asChild size="lg" className="h-11 rounded-xl px-5">
+            <Button asChild className="hidden h-10 rounded-full px-5 sm:inline-flex">
               <Link href="/register">Is diiwaangeli</Link>
             </Button>
           </div>
